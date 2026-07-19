@@ -20,7 +20,7 @@ export default {
 	plugins: [
 		css(),
 		metablock({
-			name: "Pixeldrain Tweaks V2 (Bypass, Direct Download, JDownloader, etc.)",
+			name: "Pixeldrain Tweaks",
 			namespace: "https://greasyfork.org/users/821661",
 			description:
 				"Adds direct-download buttons and links for Pixeldrain files using an alternate proxy — inspired by 'Pixeldrain Download Bypass' by hhoneeyy and MegaLime0",
