@@ -24,7 +24,7 @@ export default {
 			namespace: "https://greasyfork.org/users/821661",
 			description:
 				"Adds direct-download buttons and links for Pixeldrain files using an alternate proxy — inspired by 'Pixeldrain Download Bypass' by hhoneeyy and MegaLime0",
-			version: "1.6.0",
+			version: "2.0.0",
 			author: "hdyzen",
 			match: [
 				"https://pixeldrain.com/*",

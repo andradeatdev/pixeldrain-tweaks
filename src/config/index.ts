@@ -4,10 +4,10 @@ export const CONFIG = {
 	buttons: [
 		{ icon: "download", text: "DL file", action: downloadCurrentFile },
 		{ icon: "download", text: "DL list zip", action: downloadCurrentList },
-		{ icon: "content_copy", text: "Copy file", action: copyFileLink },
-		{ icon: "content_copy", text: "Copy all files", action: copyFilesLinks },
-		{ icon: "content_copy", text: "Copy list zip", action: copyListLink },
-		{ icon: "link", text: "Show URLs", attrs: { popovertarget: "pdt-urls" } },
+		{ icon: "content_copy", text: "Copy link", action: copyFileLink },
+		{ icon: "content_copy", text: "Copy all links", action: copyFilesLinks },
+		{ icon: "content_copy", text: "Copy list link", action: copyListLink },
+		{ icon: "link", text: "Show links", attrs: { popovertarget: "pdt-urls" } },
 		{ icon: "settings", text: "Settings", attrs: { popovertarget: "pdt-menu" } },
 	],
 
