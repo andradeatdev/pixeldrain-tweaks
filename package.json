@@ -12,6 +12,8 @@
     "@babel/core": "^8.0.1",
     "@babel/preset-env": "^8.0.2",
     "@babel/preset-typescript": "^8.0.1",
+    "@hdyzen/rollup-plugin-userscript-css": "^1.0.0",
+    "@hdyzen/rollup-plugin-userscript-meta": "^1.0.1",
     "@rollup/plugin-alias": "^6.0.0",
     "@rollup/plugin-babel": "^7.1.0",
     "@rollup/plugin-commonjs": "^29.0.3",
@@ -21,6 +23,7 @@
     "@violentmonkey/types": "^0.3.3",
     "concurrently": "^10.0.3",
     "rollup": "^4.62.2",
+    "rollup-plugin-string": "^3.0.0",
     "rollup-plugin-userscript-meta": "^1.0.2"
   },
   "peerDependencies": {

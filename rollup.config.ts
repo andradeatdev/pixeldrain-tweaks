@@ -1,11 +1,11 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import css from "@hdyzen/rollup-plugin-userscript-css";
+import metablock from "@hdyzen/rollup-plugin-userscript-meta";
 import alias from "@rollup/plugin-alias";
 import babel from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
-import replace from "@rollup/plugin-replace";
-import metablock from "rollup-plugin-userscript-meta";
 
 export default {
 	input: "src/index.ts",
@@ -18,10 +18,26 @@ export default {
 		clearScreen: false,
 	},
 	plugins: [
+		css(),
 		metablock({
-			name: "Example",
-			version: "1.0.0",
-			match: ["https://example.com/*"],
+			name: "Pixeldrain Tweaks V2 (Bypass, Direct Download, JDownloader, etc.)",
+			namespace: "https://greasyfork.org/users/821661",
+			description:
+				"Adds direct-download buttons and links for Pixeldrain files using an alternate proxy — inspired by 'Pixeldrain Download Bypass' by hhoneeyy and MegaLime0",
+			version: "1.6.0",
+			author: "hdyzen",
+			match: [
+				"https://pixeldrain.com/*",
+				"https://pixeldrain.net/*",
+				"https://pixeldrain.dev/*",
+				"https://pixeldrain.co/*",
+				"https://pixeldrain.cc/*",
+				"https://pixeldrain.in/*",
+			],
+			runAt: "document-end",
+			grant: ["GM_openInTab", "GM_addStyle", "GM_getValue", "GM_setValue"],
+			icon: "https://www.google.com/s2/favicons?domain=pixeldrain.com/&sz=64",
+			license: "GPL-3.0-only",
 		}),
 		alias({
 			entries: [
@@ -30,12 +46,6 @@ export default {
 					replacement: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "src"),
 				},
 			],
-		}),
-		replace({
-			preventAssignment: true,
-			values: {
-				__VERSION__: JSON.stringify("1.6.0"),
-			},
 		}),
 		resolve({ extensions: [".js", ".ts"], browser: true }),
 		commonjs(),
