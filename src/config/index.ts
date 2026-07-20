@@ -1,3 +1,4 @@
+import { DEFAULT_CUSTOM_PROXIES } from "@/constants";
 import { copyFileLink, copyFilesLinks, copyListLink, downloadCurrentFile, downloadCurrentList } from "@/file";
 
 export const CONFIG = {
@@ -17,10 +18,7 @@ export const CONFIG = {
 			label: "Custom proxy URLs",
 			description: "Separated by newline",
 			placeholder: "https://proxy1.com/api\nhttps://proxy2.com/api",
-			value: GM_getValue(
-				"customProxies",
-				["http://cdn.pixeldrain.eu.cc", "https://pixeldrain.fdyzen.workers.dev"].join("\n"),
-			),
+		value: GM_getValue("customProxies", DEFAULT_CUSTOM_PROXIES),
 		},
 		forceViewVideo: {
 			type: "toggle" as const,
