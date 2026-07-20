@@ -2,6 +2,10 @@
     display: none;
 }
 
+.pdt-toolbar--button {
+    gap: 5px;
+}
+
 @scope (.pdt-popover) {
     * {
         margin: 0;

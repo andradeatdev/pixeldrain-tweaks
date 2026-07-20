@@ -3,11 +3,11 @@ import { copyFileLink, copyFilesLinks, copyListLink, downloadCurrentFile, downlo
 
 export const CONFIG = {
 	buttons: [
-		{ icon: "download", text: "DL file", action: downloadCurrentFile },
-		{ icon: "download", text: "DL list zip", action: downloadCurrentList },
+		{ icon: "save_alt", text: "DL file", action: downloadCurrentFile },
+		{ icon: "save_alt", text: "DL list zip", action: downloadCurrentList },
 		{ icon: "content_copy", text: "Copy link", action: copyFileLink },
-		{ icon: "content_copy", text: "Copy all links", action: copyFilesLinks },
-		{ icon: "content_copy", text: "Copy list link", action: copyListLink },
+		{ icon: "copy_all", text: "Copy all links", action: copyFilesLinks },
+		{ icon: "folder_copy", text: "Copy list link", action: copyListLink },
 		{ icon: "link", text: "Show links", attrs: { popovertarget: "pdt-urls" } },
 		{ icon: "settings", text: "Settings", attrs: { popovertarget: "pdt-menu" } },
 	],
@@ -18,7 +18,7 @@ export const CONFIG = {
 			label: "Custom proxy URLs",
 			description: "Separated by newline",
 			placeholder: "https://proxy1.com/api\nhttps://proxy2.com/api",
-		value: GM_getValue("customProxies", DEFAULT_CUSTOM_PROXIES),
+			value: GM_getValue("customProxies", DEFAULT_CUSTOM_PROXIES),
 		},
 		forceViewVideo: {
 			type: "toggle" as const,
