@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Pixeldrain Tweaks
 // @namespace       https://greasyfork.org/users/821661
-// @version         2.0.1
+// @version         2.0.2
 // @description     Adds direct-download buttons and links for Pixeldrain files using an alternate proxy — inspired by 'Pixeldrain Download Bypass' by hhoneeyy and MegaLime0
 // @author          hdyzen
 // @icon            https://www.google.com/s2/favicons?domain=pixeldrain.com/&sz=64
@@ -18,6 +18,12 @@
 // @grant           GM_setValue
 // ==/UserScript==
 
+const DEFAULT_CUSTOM_PROXIES = [
+"https://cdn.pixeldrain.eu.cc",
+"# Lines starting with # are ignored",
+"# https://pixeldrain.fdyzen.workers.dev"].
+join("\n");
+
 function openTab(url) {
   if (typeof GM_openInTab !== "undefined") return GM_openInTab(url);
   return window.open(url, "_blank");
@@ -29,12 +35,14 @@ function getRandom(arr) {
 }
 
 function getProxyURL() {
-  const raw = GM_getValue("customProxies", CONFIG.fields.customProxies.value);
+  const raw = GM_getValue("customProxies", DEFAULT_CUSTOM_PROXIES);
   const proxies = [];
 
   for (const line of raw.split("\n")) {
     const trimmed = line.trim();
     if (!trimmed) continue;
+
+    if (trimmed.startsWith("#")) continue;
 
     proxies.push(line);
   }
@@ -134,11 +142,11 @@ function copyListLink() {
 
 const CONFIG = {
   buttons: [
-  { icon: "download", text: "DL file", action: downloadCurrentFile },
-  { icon: "download", text: "DL list zip", action: downloadCurrentList },
+  { icon: "save_alt", text: "DL file", action: downloadCurrentFile },
+  { icon: "save_alt", text: "DL list zip", action: downloadCurrentList },
   { icon: "content_copy", text: "Copy link", action: copyFileLink },
-  { icon: "content_copy", text: "Copy all links", action: copyFilesLinks },
-  { icon: "content_copy", text: "Copy list link", action: copyListLink },
+  { icon: "copy_all", text: "Copy all links", action: copyFilesLinks },
+  { icon: "folder_copy", text: "Copy list link", action: copyListLink },
   { icon: "link", text: "Show links", attrs: { popovertarget: "pdt-urls" } },
   { icon: "settings", text: "Settings", attrs: { popovertarget: "pdt-menu" } }],
 
@@ -149,10 +157,7 @@ const CONFIG = {
       label: "Custom proxy URLs",
       description: "Separated by newline",
       placeholder: "https://proxy1.com/api\nhttps://proxy2.com/api",
-      value: GM_getValue(
-        "customProxies",
-        ["http://cdn.pixeldrain.eu.cc", "https://pixeldrain.fdyzen.workers.dev"].join("\n")
-      )
+      value: GM_getValue("customProxies", DEFAULT_CUSTOM_PROXIES)
     },
     forceViewVideo: {
       type: "toggle",
@@ -385,6 +390,10 @@ main();
 GM_addStyle(`
 .file_viewer:has(.gallery) :is([title="DL file"], [title="Copy file"]) {
     display: none;
+}
+
+.pdt-toolbar--button {
+    gap: 5px;
 }
 
 @scope (.pdt-popover) {
