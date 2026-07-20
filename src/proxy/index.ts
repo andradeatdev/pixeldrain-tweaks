@@ -9,6 +9,8 @@ export function getProxyURL(): string {
 		const trimmed = line.trim();
 		if (!trimmed) continue;
 
+		if (trimmed.startsWith("#")) continue;
+
 		proxies.push(line);
 	}
 
