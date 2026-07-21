@@ -1,5 +1,7 @@
 # Pixeldrain Tweaks
 
+> Generate Pixeldrain proxy links manually: https://pixel.zencore.fun/
+
 > Feedback and feature ideas: [Comments tab](https://greasyfork.org/scripts/551561/feedback)
 
 Enhances Pixeldrain with direct download buttons, proxy bypass, and a settings modal.
