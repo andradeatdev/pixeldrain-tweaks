@@ -11,7 +11,7 @@
 // @match           https://pixeldrain.co/*
 // @match           https://pixeldrain.cc/*
 // @match           https://pixeldrain.in/*
-// @run-at          document-end
+// @run-at          document-start
 // @grant           GM_openInTab
 // @grant           GM_addStyle
 // @grant           GM_getValue
@@ -138,6 +138,25 @@ function copyListLink() {
   const currentListID = getCurrentList();
   const proxyURL = getProxyURL();
   $window.navigator.clipboard.writeText(`${proxyURL}/zip/${currentListID}?filename=${currentListID}.zip`);
+}
+
+function patchViewerData() {
+  Object.defineProperty($window, "viewer_data", {
+    get() {
+      return $window._viewer_data;
+    },
+    set(v) {
+      if (v.type === "file") v.api_response.allow_video_player = true;
+
+      if (v.type === "list") {
+        for (const f of v.api_response.files) {
+          f.allow_video_player = true;
+        }
+      }
+
+      $window._viewer_data = v;
+    }
+  });
 }
 
 const CONFIG = {
@@ -362,6 +381,15 @@ function createToolbarSeparator() {
 }
 
 function main() {
+  if (CONFIG.fields.forceViewVideo.value) {
+    patchViewerData();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => onLoaded());
+}
+main();
+
+function onLoaded() {
   const separator = document.querySelector(".toolbar .separator");
   if (!separator) {
     throw new Error("Separator can't be found.");
@@ -374,7 +402,7 @@ function main() {
 
   for (const btn of CONFIG.buttons) {
     const item = createToolbarButton(btn.text, getIcon(btn.icon));
-    if ("action" in btn && btn.action) {
+    if (btn.action) {
       item.addEventListener("click", () => btn.action?.());
     }
     for (const [key, value] of Object.entries(btn.attrs || {})) {
@@ -385,7 +413,6 @@ function main() {
 
   document.body.append(settingsModal, showUrlsModal);
 }
-main();
 
 GM_addStyle(`
 .file_viewer:has(.gallery) :is([title="DL file"], [title="Copy file"]) {
