@@ -4,8 +4,8 @@
 }
 
 /* Hide list buttons */
-.file_viewer:not(:has(.list_navigator))
-:is([title="DL list zip"], [title="Copy all links"], [title="Copy list link"], [title="Aria2 (list)"]) {
+.file_viewer:not(:has(.list_navigator)) 
+:is([title="DL list zip"], [title="Copy all links"], [title="Copy list link"], [title="Aria2 (list)"], [title="Aria2 (zip)"]) {
 	display: none;
 }
 
