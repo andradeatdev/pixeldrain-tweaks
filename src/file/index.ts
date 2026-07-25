@@ -1,69 +1,27 @@
-import { getProxyURL } from "@/proxy";
-import { $window } from "@/states";
-import type { FileItem } from "@/types/file";
-import { openTab } from "@/utils";
+import {
+	getFileCopyURL,
+	getFileProxyURL,
+	getFileRawURL,
+	getFilesProxyURLs,
+	getFilesRawURLs,
+	getListCopyURL,
+	getListProxyURL,
+	getZipRawURL,
+} from "@/file/url-builder";
+import { getSetting } from "@/settings";
+import { showToast } from "@/ui/toast";
+import { copyToClipboard, openTab } from "@/utils";
 
-function getCurrentFile(): FileItem {
-	const viewerData = $window.viewer_data;
-	if (!viewerData) {
-		throw new Error("Can't get current file, viewer data is empty.");
-	}
-
-	if (viewerData.type === "file") {
-		return viewerData.api_response;
-	}
-
-	const file = viewerData.api_response.files.find((f) => f.selected);
-	if (!file) {
-		throw new Error("Can't get current file, not found selected.");
-	}
-
-	return file;
-}
-
-function getAllFiles(): FileItem[] {
-	const viewerData = $window.viewer_data;
-	if (!viewerData) {
-		throw new Error("Can't get files, viewer data is empty.");
-	}
-
-	if (viewerData.type === "file") {
-		return [viewerData.api_response];
-	}
-
-	return viewerData.api_response.files;
-}
-
-function getCurrentList(): string {
-	const viewerData = $window.viewer_data;
-	if (!viewerData) {
-		throw new Error("Can't get current list, viewer data is empty.");
-	}
-
-	if (viewerData.type === "file") {
-		throw new Error("Can't get current list, page is a type file.");
-	}
-
-	return viewerData.api_response.id;
-}
-
-export function getFileProxyURL(): string {
-	const currentFile = getCurrentFile();
-	const proxyURL = getProxyURL();
-	return `${proxyURL}/${currentFile.id}?download=`;
-}
-
-export function getFilesProxyURLs(): string[] {
-	const filesIDs = getAllFiles();
-	const proxyURL = getProxyURL();
-	return filesIDs.map((f) => `${proxyURL}/${f.id}?filename=${f.id}.${f.name.split(".").at(-1) || "txt"}`);
-}
-
-export function getListProxyURL(): string {
-	const currentListID = getCurrentList();
-	const proxyURL = getProxyURL();
-	return `${proxyURL}/zip/${currentListID}`;
-}
+export {
+	getFileCopyURL,
+	getFileProxyURL,
+	getFileRawURL,
+	getFilesProxyURLs,
+	getListCopyURL,
+	getListProxyURL,
+	getZipRawURL as getListRawURL,
+} from "@/file/url-builder";
+export { getAllFiles, getCurrentFile, getCurrentList, patchViewerData } from "@/file/viewer-data";
 
 export function downloadCurrentFile() {
 	openTab(getFileProxyURL());
@@ -73,39 +31,68 @@ export function downloadCurrentList() {
 	openTab(getListProxyURL());
 }
 
-export function copyFileLink() {
-	const currentFile = getCurrentFile();
-	const proxyURL = getProxyURL();
-	$window.navigator.clipboard.writeText(
-		`${proxyURL}/${currentFile.id}?filename=${currentFile.id}.${currentFile.name.split(".").at(-1) || "txt"}`,
-	);
+export async function copyFileLink() {
+	await copyToClipboard(getFileCopyURL());
 }
 
-export function copyFilesLinks() {
-	$window.navigator.clipboard.writeText(getFilesProxyURLs().join("\n"));
+export async function copyFilesLinks() {
+	await copyToClipboard(getFilesProxyURLs().join("\n"));
 }
 
-export function copyListLink() {
-	const currentListID = getCurrentList();
-	const proxyURL = getProxyURL();
-	$window.navigator.clipboard.writeText(`${proxyURL}/zip/${currentListID}?filename=${currentListID}.zip`);
+export async function copyListLink() {
+	await copyToClipboard(getListCopyURL());
 }
 
-export function patchViewerData() {
-	Object.defineProperty($window, "viewer_data", {
-		get() {
-			return $window._viewer_data;
+function sendToAria2(url: string | string[]) {
+	const aria2URL = getSetting("aria2URL");
+	if (!aria2URL) throw new Error("Aria2 URL is not set, check if you have it in Settings.");
+
+	const aria2Secret = getSetting("aria2Secret");
+	const params: (string | string[])[] = [Array.isArray(url) ? url : [url]];
+	if (aria2Secret) {
+		params.unshift(`token:${aria2Secret}`);
+	}
+
+	GM_xmlhttpRequest({
+		url: aria2URL,
+		method: "POST",
+		responseType: "json",
+		data: JSON.stringify({
+			jsonrpc: "2.0",
+			id: `pdt-${Date.now()}`,
+			method: "aria2.addUri",
+			params,
+		}),
+		headers: { "Content-Type": "application/json" },
+		onerror() {
+			showToast("Aria2: connection failed. Check if the server is running.");
 		},
-		set(v) {
-			if (v.type === "file") v.api_response.allow_video_player = true;
-
-			if (v.type === "list") {
-				for (const f of v.api_response.files) {
-					f.allow_video_player = true;
-				}
+		onload(response) {
+			console.log("Response", response);
+			if (response.status === 200) {
+				showToast("Aria2: success");
+				return;
 			}
 
-			$window._viewer_data = v;
+			const body = response.response as { error: { message: string } };
+			if (body?.error.message) {
+				showToast(`Aria2: ${body.error.message || "RPC error"}`);
+				return;
+			}
+
+			showToast(`Aria2: HTTP ${response.status}`);
 		},
 	});
+}
+
+export function sendFileToAria2() {
+	sendToAria2(getFileRawURL());
+}
+
+export function sendListToAria2() {
+	sendToAria2(getFilesRawURLs());
+}
+
+export function sendZipToAria2() {
+	sendToAria2(getZipRawURL());
 }

@@ -1,3 +1,5 @@
+import { createFieldBase } from "./field";
+
 interface ToggleFieldOptions {
 	label: string;
 	description?: string;
@@ -5,24 +7,24 @@ interface ToggleFieldOptions {
 	onChange?: (value: boolean) => void;
 }
 
-export function createToggleField({ label, description, defaultValue, onChange }: ToggleFieldOptions): HTMLLabelElement {
-	const wrapper = document.createElement("label");
-	wrapper.className = "pdt-field pdt-field--toggle";
+export function createToggleField({
+	label,
+	description,
+	defaultValue,
+	onChange,
+}: ToggleFieldOptions): HTMLLabelElement {
+	const { wrapper, label: labelText } = createFieldBase({
+		label,
+		description,
+		className: "pdt-field--card pdt-field--toggle",
+	});
 
 	const textWrapper = document.createElement("span");
 	textWrapper.className = "pdt-field__text";
 
-	const labelText = document.createElement("span");
-	labelText.className = "pdt-field__label";
-	labelText.textContent = label;
+	const descClone = wrapper.querySelector(".pdt-field__description");
 	textWrapper.append(labelText);
-
-	if (description) {
-		const descText = document.createElement("span");
-		descText.className = "pdt-field__description";
-		descText.textContent = description;
-		textWrapper.append(descText);
-	}
+	if (descClone) textWrapper.append(descClone);
 
 	const track = document.createElement("span");
 	track.className = "pdt-toggle";

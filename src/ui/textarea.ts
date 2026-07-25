@@ -1,3 +1,5 @@
+import { createFieldBase, debounce } from "./field";
+
 interface TextareaFieldOptions {
 	label: string;
 	description?: string;
@@ -15,23 +17,14 @@ export function createTextareaField({
 	rows = 4,
 	onChange,
 }: TextareaFieldOptions): HTMLLabelElement {
-	const wrapper = document.createElement("label");
-	wrapper.className = "pdt-field pdt-field--textarea";
-
-	const labelText = document.createElement("span");
-	labelText.className = "pdt-field__label";
-	labelText.textContent = label;
-	wrapper.append(labelText);
-
-	if (description) {
-		const descText = document.createElement("span");
-		descText.className = "pdt-field__description";
-		descText.textContent = description;
-		wrapper.append(descText);
-	}
+	const { wrapper } = createFieldBase({
+		label,
+		description,
+		className: "pdt-field--textarea",
+	});
 
 	const textarea = document.createElement("textarea");
-	textarea.className = "pdt-field__textarea";
+	textarea.className = "pdt-textarea";
 	textarea.value = defaultValue;
 	textarea.rows = rows;
 
@@ -41,13 +34,8 @@ export function createTextareaField({
 
 	wrapper.append(textarea);
 
-	let debounceTimer: ReturnType<typeof setTimeout>;
-	textarea.addEventListener("input", () => {
-		clearTimeout(debounceTimer);
-		debounceTimer = setTimeout(() => {
-			onChange?.(textarea.value);
-		}, 300);
-	});
+	const emit = debounce<string>((v) => onChange?.(v));
+	textarea.addEventListener("input", () => emit(textarea.value));
 
 	return wrapper;
 }

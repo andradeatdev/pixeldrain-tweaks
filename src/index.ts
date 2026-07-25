@@ -1,15 +1,20 @@
 import { CONFIG } from "@/config";
-import { createSettingsModal, createShowUrlsModal, createToolbarButton, createToolbarSeparator } from "@/ui";
+import { getSetting } from "@/settings";
+import { createSettingsModal, createShowUrlsModal, createToolbarButton, createToolbarSeparator, showToast } from "@/ui";
 import { getIcon } from "@/ui/icon";
 import "./style.css";
 import { patchViewerData } from "@/file";
 
 function main() {
-	if (CONFIG.fields.forceViewVideo.value) {
-		patchViewerData();
-	}
+	try {
+		if (getSetting("forceViewVideo")) {
+			patchViewerData();
+		}
 
-	document.addEventListener("DOMContentLoaded", () => onLoaded());
+		document.addEventListener("DOMContentLoaded", () => onLoaded());
+	} catch (e) {
+		showToast(e instanceof Error ? e.message : "An error occurred");
+	}
 }
 main();
 
@@ -26,10 +31,9 @@ function onLoaded() {
 
 	for (const btn of CONFIG.buttons) {
 		const item = createToolbarButton(btn.text, getIcon(btn.icon));
-		if (btn.action) {
-			item.addEventListener("click", () => btn.action?.());
-		}
-		for (const [key, value] of Object.entries(btn.attrs || {})) {
+		if (btn.action) item.addEventListener("click", () => btn.action());
+
+		for (const [key, value] of Object.entries(btn.attrs ?? {})) {
 			item.setAttribute(key, value);
 		}
 		separator.before(item);

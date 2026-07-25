@@ -3,3 +3,5 @@ export const DEFAULT_CUSTOM_PROXIES = [
 	"# Lines starting with # are ignored",
 	"# https://pixeldrain.fdyzen.workers.dev",
 ].join("\n");
+
+export const DEFAULT_ARIA2_URL = "http://localhost:6800/jsonrpc";

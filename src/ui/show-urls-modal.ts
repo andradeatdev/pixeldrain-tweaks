@@ -1,37 +1,43 @@
 import { getFileProxyURL, getFilesProxyURLs, getListProxyURL } from "@/file";
 import { $window } from "@/states";
+import { copyToClipboard } from "@/utils";
 import { createModal } from "./modal";
 
-export function createShowUrlsModal(): HTMLDivElement {
+function getUrlsForPage(): string[] {
 	const viewerData = $window.viewer_data;
-	if (!viewerData) {
-		throw new Error("Can't create Show URLs modal, viewer data is empty.");
-	}
-
-	const urls: string[] = [];
+	if (!viewerData) return [];
 
 	if (viewerData.type === "file") {
-		urls.push(getFileProxyURL());
-	} else {
-		urls.push(...getFilesProxyURLs(), getListProxyURL());
+		return [getFileProxyURL()];
 	}
 
-	const content = document.createElement("div");
-	content.className = "pdt-urls__content";
+	return [...getFilesProxyURLs(), getListProxyURL()];
+}
 
-	const textarea = document.createElement("textarea");
-	textarea.className = "pdt-urls__textarea";
-	textarea.readOnly = true;
+function refreshUrls(textarea: HTMLTextAreaElement): void {
+	const urls = getUrlsForPage();
 	textarea.value = urls.join("\n");
 	textarea.rows = Math.min(urls.length + 1, 15);
+}
+
+export function createShowUrlsModal(): HTMLDivElement {
+	const content = document.createElement("div");
+	content.className = "pdt-modal__content";
+
+	const textarea = document.createElement("textarea");
+	textarea.className = "pdt-textarea pdt-urls__textarea";
+	textarea.readOnly = true;
 
 	const copyBtn = document.createElement("button");
 	copyBtn.className = "pdt-urls__copy";
 	copyBtn.textContent = "Copy all";
-	copyBtn.addEventListener("click", () => {
-		$window.navigator.clipboard.writeText(textarea.value);
-	});
+	copyBtn.addEventListener("click", () => copyToClipboard(textarea.value));
 
 	content.append(textarea, copyBtn);
-	return createModal("pdt-urls", "Show URLs", content);
+
+	const modal = createModal("pdt-urls", "Show URLs", content);
+	refreshUrls(textarea);
+	modal.addEventListener("popovershow", () => refreshUrls(textarea));
+
+	return modal;
 }
