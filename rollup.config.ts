@@ -35,7 +35,7 @@ export default {
 				"https://pixeldrain.in/*",
 			],
 			runAt: "document-start",
-			grant: ["GM_openInTab", "GM_addStyle", "GM_getValue", "GM_setValue"],
+			grant: ["GM_openInTab", "GM_addStyle", "GM_getValue", "GM_setValue", "GM_xmlhttpRequest"],
 			icon: "https://www.google.com/s2/favicons?domain=pixeldrain.com/&sz=64",
 			license: "GPL-3.0-only",
 		}),
