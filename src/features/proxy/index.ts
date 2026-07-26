@@ -1,5 +1,5 @@
-import { getSetting } from "@/settings";
-import { getRandom } from "@/utils";
+import { getSetting } from "@/features/settings";
+import { getRandom } from "@/shared/utils";
 
 export function getProxyURL(): string {
 	const raw = getSetting("customProxies");

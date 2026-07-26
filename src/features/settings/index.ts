@@ -1,4 +1,4 @@
-import { DEFAULT_ARIA2_URL, DEFAULT_CUSTOM_PROXIES } from "@/constants";
+import { DEFAULT_ARIA2_URL, DEFAULT_CUSTOM_PROXIES } from "@/shared/constants";
 
 export interface FieldDeclarations {
 	customProxies: {

@@ -1,3 +1,6 @@
+import { getSetting } from "@/features/settings";
+import { copyToClipboard, openTab } from "@/shared/utils";
+import { showToast } from "@/ui/toast";
 import {
 	getFileCopyURL,
 	getFileProxyURL,
@@ -7,11 +10,9 @@ import {
 	getListCopyURL,
 	getListProxyURL,
 	getZipRawURL,
-} from "@/file/url-builder";
-import { getSetting } from "@/settings";
-import { showToast } from "@/ui/toast";
-import { copyToClipboard, openTab } from "@/utils";
+} from "./url-builder";
 
+export { getAllFiles, getCurrentFile, getCurrentList, patchViewerData } from "@/core/viewer-data";
 export {
 	getFileCopyURL,
 	getFileProxyURL,
@@ -20,8 +21,7 @@ export {
 	getListCopyURL,
 	getListProxyURL,
 	getZipRawURL as getListRawURL,
-} from "@/file/url-builder";
-export { getAllFiles, getCurrentFile, getCurrentList, patchViewerData } from "@/file/viewer-data";
+} from "./url-builder";
 
 export function downloadCurrentFile() {
 	openTab(getFileProxyURL());

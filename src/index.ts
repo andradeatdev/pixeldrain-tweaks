@@ -1,9 +1,9 @@
 import { CONFIG } from "@/config";
-import { getSetting } from "@/settings";
+import { getSetting } from "@/features/settings";
 import { createSettingsModal, createShowUrlsModal, createToolbarButton, createToolbarSeparator, showToast } from "@/ui";
 import { getIcon } from "@/ui/icon";
 import "./style.css";
-import { patchViewerData } from "@/file";
+import { patchViewerData } from "@/features/download";
 
 function main() {
 	try {

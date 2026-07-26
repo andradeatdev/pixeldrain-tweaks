@@ -19,7 +19,98 @@
 // @grant           GM_xmlhttpRequest
 // ==/UserScript==
 
+const DEFAULT_CUSTOM_PROXIES = [
+"https://cdn.pixeldrain.eu.cc",
+"# Lines starting with # are ignored",
+"# https://pixeldrain.fdyzen.workers.dev"].
+join("\n");
+
+const DEFAULT_ARIA2_URL = "http://localhost:6800/jsonrpc";
+
+const FIELDS = {
+  customProxies: {
+    type: "textarea",
+    label: "Custom proxy URLs",
+    description: "Separated by newline",
+    placeholder: DEFAULT_CUSTOM_PROXIES,
+    default: DEFAULT_CUSTOM_PROXIES
+  },
+  aria2URL: {
+    type: "input",
+    label: "Aria2 RPC URL",
+    description: "Aria2 RPC URL",
+    placeholder: DEFAULT_ARIA2_URL,
+    default: DEFAULT_ARIA2_URL
+  },
+  aria2Secret: {
+    type: "input",
+    label: "Aria2 RPC Secret",
+    description: "Secret token for aria2 RPC authentication (leave empty if not needed)",
+    placeholder: "",
+    default: ""
+  },
+  forceViewVideo: {
+    type: "toggle",
+    label: "Force view video",
+    description: "Force view video, even if it's not logged.",
+    default: true
+  }
+};
+
+function getSetting(key) {
+  const field = FIELDS[key];
+  return GM_getValue(key, field.default);
+}
+
+function setSetting(key, value) {
+  GM_setValue(key, value);
+}
+
 const $window = unsafeWindow ? unsafeWindow : window;
+
+let el = null;
+
+function ensureToast() {
+  if (el) return el;
+
+  el = document.createElement("div");
+  el.popover = "auto";
+  el.className = "pdt-toast";
+  document.body.append(el);
+
+  return el;
+}
+
+function showToast(message) {
+  const toast = ensureToast();
+
+  toast.textContent = message;
+  toast.showPopover();
+  toast.addEventListener("animationend", (ev) => ev.animationName === "pdt-toast-out" && toast.showPopover());
+}
+
+function getRandom(arr) {
+  if (arr.length === 0) throw new Error("Can't get random item, array is empty.");
+
+  const index = Math.floor(Math.random() * arr.length);
+  const item = arr[index];
+  if (item === undefined) throw new Error("Can't get random item, array element is undefined.");
+
+  return item;
+}
+
+async function copyToClipboard(text) {
+  try {
+    return $window.navigator.clipboard.writeText(text);
+  } catch {
+    showToast("Failed to copy to clipboard");
+  }
+}
+
+function openTab(url) {
+  if (typeof GM_openInTab !== "undefined") return GM_openInTab(url);
+  return window.open(url, "_blank");
+}
 
 function getViewerData() {
   const viewerData = $window.viewer_data;
@@ -81,92 +172,6 @@ function patchViewerData() {
       $window._viewer_data = v;
     }
   });
-}
-
-const DEFAULT_CUSTOM_PROXIES = [
-"https://cdn.pixeldrain.eu.cc",
-"# Lines starting with # are ignored",
-"# https://pixeldrain.fdyzen.workers.dev"].
-join("\n");
-
-const DEFAULT_ARIA2_URL = "http://localhost:6800/jsonrpc";
-
-const FIELDS = {
-  customProxies: {
-    type: "textarea",
-    label: "Custom proxy URLs",
-    description: "Separated by newline",
-    placeholder: DEFAULT_CUSTOM_PROXIES,
-    default: DEFAULT_CUSTOM_PROXIES
-  },
-  aria2URL: {
-    type: "input",
-    label: "Aria2 RPC URL",
-    description: "Aria2 RPC URL",
-    placeholder: DEFAULT_ARIA2_URL,
-    default: DEFAULT_ARIA2_URL
-  },
-  aria2Secret: {
-    type: "input",
-    label: "Aria2 RPC Secret",
-    description: "Secret token for aria2 RPC authentication (leave empty if not needed)",
-    placeholder: "",
-    default: ""
-  },
-  forceViewVideo: {
-    type: "toggle",
-    label: "Force view video",
-    description: "Force view video, even if it's not logged.",
-    default: true
-  }
-};
-
-function getSetting(key) {
-  const field = FIELDS[key];
-  return GM_getValue(key, field.default);
-}
-
-function setSetting(key, value) {
-  GM_setValue(key, value);
-}
-
-let el = null;
-
-function ensureToast() {
-  if (el) return el;
-
-  el = document.createElement("div");
-  el.popover = "auto";
-  el.className = "pdt-toast";
-  document.body.append(el);
-
-  return el;
-}
-
-function showToast(message) {
-  const toast = ensureToast();
-
-  toast.textContent = message;
-  toast.showPopover();
-  toast.addEventListener("animationend", (ev) => ev.animationName === "pdt-toast-out" && toast.showPopover());
-}
-
-function openTab(url) {
-  if (typeof GM_openInTab !== "undefined") return GM_openInTab(url);
-  return window.open(url, "_blank");
-}
-
-function getRandom(arr) {
-  if (arr.length === 0) throw new Error("Can't get random item, array is empty.");
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-async function copyToClipboard(text) {
-  try {
-    return $window.navigator.clipboard.writeText(text);
-  } catch {
-    showToast("Failed to copy to clipboard");
-  }
 }
 
 function getProxyURL() {
@@ -621,7 +626,13 @@ GM_addStyle(`
 
 /* Hide list buttons */
 .file_viewer:not(:has(.list_navigator), :has(.gallery))
-:is([title="DL list zip"], [title="Copy all links"], [title="Copy list link"], [title="Aria2 (list)"], [title="Aria2 (zip)"]) {
+:is(
+	[title="DL list zip"],
+	[title="Copy all links"],
+	[title="Copy list link"],
+	[title="Aria2 (list)"],
+	[title="Aria2 (zip)"]
+) {
 	display: none;
 }
 
@@ -866,15 +877,17 @@ GM_addStyle(`
 .pdt-toast {
 	padding: 10px 20px;
 	border-radius: 8px;
-    border: 2px solid var(--highlight_background);
+	border: 2px solid var(--highlight_background);
 	background-color: var(--body_color);
 	color: #fff;
 	font-size: 14px;
-    inset: auto 15px 15px auto;
-    box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-    0 10px 15px -3px rgba(0, 0, 0, 0.08);
-	animation: pdt-toast-in 0.3s ease, pdt-toast-out 0.3s ease 2.7s forwards;
+	inset: auto 15px 15px auto;
+	box-shadow:
+		0 4px 6px -1px rgba(0, 0, 0, 0.05),
+		0 10px 15px -3px rgba(0, 0, 0, 0.08);
+	animation:
+		pdt-toast-in 0.3s ease,
+		pdt-toast-out 0.3s ease 2.7s forwards;
 }
 
 @keyframes pdt-toast-in {

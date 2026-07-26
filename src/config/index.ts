@@ -7,7 +7,7 @@ import {
 	sendFileToAria2,
 	sendListToAria2,
 	sendZipToAria2,
-} from "@/file";
+} from "@/features/download";
 
 export const CONFIG = {
 	buttons: [

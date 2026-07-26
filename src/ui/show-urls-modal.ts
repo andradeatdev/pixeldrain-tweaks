@@ -1,6 +1,6 @@
-import { getFileProxyURL, getFilesProxyURLs, getListProxyURL } from "@/file";
-import { $window } from "@/states";
-import { copyToClipboard } from "@/utils";
+import { getFileProxyURL, getFilesProxyURLs, getListProxyURL } from "@/features/download";
+import { $window } from "@/shared/states";
+import { copyToClipboard } from "@/shared/utils";
 import { createModal } from "./modal";
 
 function getUrlsForPage(): string[] {

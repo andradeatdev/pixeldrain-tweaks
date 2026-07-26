@@ -1,4 +1,4 @@
-import { createFieldBase } from "./field";
+import { createFieldBase } from "./";
 
 interface ToggleFieldOptions {
 	label: string;

@@ -1,5 +1,5 @@
-import { getAllFiles, getCurrentFile, getCurrentList } from "@/file/viewer-data";
-import { getProxyURL } from "@/proxy";
+import { getAllFiles, getCurrentFile, getCurrentList } from "@/core/viewer-data";
+import { getProxyURL } from "@/features/proxy";
 
 function getFileExtension(name: string): string {
 	return name.split(".").at(-1) || "txt";

@@ -1,4 +1,4 @@
-import { $window } from "@/states";
+import { $window } from "@/shared/states";
 import type { FileItem, ViewerData } from "@/types/file";
 
 function getViewerData(): ViewerData {

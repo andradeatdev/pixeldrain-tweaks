@@ -1,8 +1,8 @@
-import { FIELDS, getSetting, setSetting } from "@/settings";
-import { createInputField } from "./input";
-import { createModal } from "./modal";
-import { createTextareaField } from "./textarea";
-import { createToggleField } from "./toggle";
+import { FIELDS, getSetting, setSetting } from "./";
+import { createInputField } from "@/ui/fields/input";
+import { createModal } from "@/ui/modal";
+import { createTextareaField } from "@/ui/fields/textarea";
+import { createToggleField } from "@/ui/fields/toggle";
 
 export function createSettingsModal(): HTMLDivElement {
 	const content = document.createElement("div");

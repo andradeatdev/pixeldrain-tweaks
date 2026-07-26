@@ -1,4 +1,4 @@
-import { createFieldBase, debounce } from "./field";
+import { createFieldBase, debounce } from "./";
 
 interface TextareaFieldOptions {
 	label: string;
