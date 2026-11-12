@@ -16,6 +16,7 @@
 }
 
 .pdt-toolbar--button {
+	width: calc(100% - 4px);
 	gap: 5px;
 }
 
