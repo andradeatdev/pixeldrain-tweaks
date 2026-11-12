@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Pixeldrain Tweaks
 // @namespace       https://greasyfork.org/users/821661
-// @version         2.1.0
+// @version         2.1.1
 // @description     Adds direct-download buttons and links for Pixeldrain files using an alternate proxy — inspired by 'Pixeldrain Download Bypass' by hhoneeyy and MegaLime0
 // @author          hdyzen
 // @icon            https://www.google.com/s2/favicons?domain=pixeldrain.com/&sz=64
@@ -316,12 +316,12 @@ const CONFIG = {
   { icon: "save_alt", text: "DL file", action: downloadCurrentFile },
   { icon: "save_alt", text: "DL list zip", action: downloadCurrentList },
   { icon: "content_copy", text: "Copy link", action: copyFileLink },
-  { icon: "copy_all", text: "Copy all links", action: copyFilesLinks },
-  { icon: "folder_copy", text: "Copy list link", action: copyListLink },
-  { icon: "launch", text: "Aria2 (file)", action: sendFileToAria2 },
-  { icon: "launch", text: "Aria2 (list)", action: sendListToAria2 },
-  { icon: "launch", text: "Aria2 (zip)", action: sendZipToAria2 },
-  { icon: "link", text: "Show links", attrs: { popovertarget: "pdt-urls" } },
+  { icon: "content_copy", text: "Copy all links", action: copyFilesLinks },
+  { icon: "folder", text: "Copy list link", action: copyListLink },
+  { icon: "open_in_new", text: "Aria2 (file)", action: sendFileToAria2 },
+  { icon: "open_in_new", text: "Aria2 (list)", action: sendListToAria2 },
+  { icon: "open_in_new", text: "Aria2 (zip)", action: sendZipToAria2 },
+  { icon: "add_link", text: "Show links", attrs: { popovertarget: "pdt-urls" } },
   { icon: "settings", text: "Settings", attrs: { popovertarget: "pdt-menu" } }]
 
 };
@@ -384,7 +384,7 @@ function createInputField({
 }
 
 function getIcon(icon) {
-  return `<i class="icon">${icon}</i>`;
+  return `<i class="icon i_${icon}"></i>`;
 }
 
 function createModal(id, title, content) {
@@ -637,6 +637,7 @@ GM_addStyle(`
 }
 
 .pdt-toolbar--button {
+	width: calc(100% - 4px);
 	gap: 5px;
 }
 
